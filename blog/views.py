@@ -2,6 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from .models import Post
 from .forms import PostForm
+from bs4 import BeautifulSoup
+import requests
+import re
+from django.http import HttpResponse
 
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
@@ -41,3 +45,22 @@ def post_edit(request, pk):
     else:
         form = PostForm(instance=post)
     return render(request, 'blog/post_edit.html', {'form': form})
+
+
+def tickers(request, tick):
+
+    base_url = "https://iss.moex.com/iss/engines/stock/markets/shares/securities/"
+    #ticker = 'SBER'
+
+    url = base_url + tick
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        html = response.text
+
+    soup = BeautifulSoup(html, "html.parser")
+    r = soup.find("rows")
+    t = r.find("row")
+    v = t.prettify()
+    u = re.findall(r'\d\d\d[.]\d\d?', v)
+    return HttpResponse(u[1])
