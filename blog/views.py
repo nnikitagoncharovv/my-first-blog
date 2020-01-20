@@ -64,3 +64,7 @@ def tickers(request, tick):
     v = t.prettify()
     u = re.findall(r'\d\d\d[.]\d\d?', v)
     return HttpResponse(u[1])
+
+def alltickers(request, alltick):
+    data = {"alltick": alltick}
+    return render(request, 'blog/tickers.html', context = data)

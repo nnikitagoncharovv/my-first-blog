@@ -1,12 +1,14 @@
-{% load static %}
-<html>
-    <head>
-        <title>InvestorsWay</title>
-    </head>
-    <body>
-            {% block content %}
-            {% endblock %}
+{% extends 'blog/base.html' %}
+{% block content %}
 
-</body>
-</html>
-#######
+    <script>
+    async function moexTickerLast(ticker) {
+      const json = await fetch('https://iss.moex.com/iss/engines/stock/markets/shares/securities/' + ticker + '.json').then(function(res) { return res.json()});
+      return json.marketdata.data.filter(function(d) { return ['TQBR', 'TQTF'].indexOf(d[1]) !== -1; })[0][12];
+    }
+
+    moexTickerLast('{{ alltick }}').then(console.log);
+    </script>
+
+    <b>Цена по запрошенному тикеру в рублях выведена в консоль</b>
+{% endblock %}
